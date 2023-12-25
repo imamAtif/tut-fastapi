@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -19,7 +21,26 @@ async def read_all_books():
 
 
 @app.get("/books/{book_title}")
-async def read_all_books(book_title):
+async def read_all_books(book_title: str):
     for book in BOOKS:
         if book.get("title").casefold() == book_title.casefold():
             return book
+
+
+@app.get("/books/")
+async def read_category_by_query(category: str):
+    books_to_return = [
+        book for book in BOOKS if book.get("category").casefold() == category.casefold()
+    ]
+    return books_to_return
+
+
+@app.get("/books/{book_author}/")
+async def read_author_category_by_query(book_author: str, category: str) -> List[Dict]:
+    book_to_return = [
+        book
+        for book in BOOKS
+        if book.get("author").casefold() == book_author.casefold()
+        and book.get("category").casefold() == category.casefold()
+    ]
+    return book_to_return
